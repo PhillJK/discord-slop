@@ -1,0 +1,48 @@
+qchat — everything downloaded/installed for this project
+=========================================================
+
+1. System packages (Fedora, installed with sudo dnf install)
+------------------------------------------------------------
+Linux client / media build:
+  gcc-c++              C++ compiler (openh264 is built from source)
+  cmake                builds libopus (opusic-sys)
+  clang-devel          libclang for bindgen (pipewire / libspa bindings)
+  alsa-lib-devel       audio I/O (cpal)
+  pipewire-devel       Wayland screen capture (PipeWire)
+  wayland-devel        xcap / wayland-sys
+  mesa-libgbm-devel    gbm-sys (xcap)
+  libdrm-devel         drm-sys (xcap)
+  libxcb-devel         X11 capture (xcap)
+  libglvnd-devel       libEGL / egl.pc (libwayshot via xcap)
+  nasm                 (recommended, not yet installed) SIMD assembly for openh264
+
+Windows cross-compilation (MinGW):
+  mingw64-gcc
+  mingw64-gcc-c++
+  mingw64-winpthreads-static
+
+Remove later with:  sudo dnf remove <package...>
+
+2. Rust toolchain components (rustup)
+-------------------------------------
+  rust-std for target x86_64-pc-windows-gnu
+      added with:   rustup target add x86_64-pc-windows-gnu
+      remove with:  rustup target remove x86_64-pc-windows-gnu
+
+3. Container images (podman)
+----------------------------
+  docker.io/library/postgres:17   (~479 MB)
+      used by deploy/compose.yaml and the temporary test container "qchat-test-pg"
+      remove with:  podman rmi docker.io/library/postgres:17
+  Volume "qchat-pg" (created only if you ran `podman compose -f deploy/compose.yaml up`)
+      remove with:  podman volume rm deploy_qchat-pg   (name may carry a project prefix; see `podman volume ls`)
+
+4. Vendored assets (committed in the repo)
+------------------------------------------
+  crates/client/assets/Phosphor.ttf   Phosphor Icons font, MIT (license next to it)
+
+5. Other local state created while testing
+------------------------------------------
+  ~/.config/qchat/known_hosts         pinned relay certificates (created by clients)
+  data/cert.pem, data/key.pem         self-signed relay cert (created where the server runs)
+  Wine prefix and scratch files under /tmp/claude-1000/... (temporary; cleared on reboot)

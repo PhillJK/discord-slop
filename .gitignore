@@ -1,0 +1,5 @@
+/target
+server.toml
+/data
+*.pem
+.env

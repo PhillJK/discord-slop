@@ -1,0 +1,37 @@
+[package]
+name = "qchat-client-core"
+description = "UI-agnostic qchat client: connection, state, media pipelines"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+default = ["media", "capture"]
+# Voice and video encode/decode. Disable for headless bots/tests.
+media = ["dep:qchat-media"]
+# Real screen capture (xcap). Without it only the synthetic test source exists.
+capture = ["media", "qchat-media/capture"]
+
+[dependencies]
+qchat-proto.workspace = true
+qchat-media = { workspace = true, optional = true, features = ["audio-io", "opus", "h264"] }
+anyhow.workspace = true
+thiserror.workspace = true
+bytes.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+quinn.workspace = true
+rustls.workspace = true
+rustls-pki-types.workspace = true
+webpki-roots.workspace = true
+sha2.workspace = true
+hex.workspace = true
+parking_lot.workspace = true
+directories.workspace = true
+
+[dev-dependencies]
+tempfile = "3"
+qchat-server.workspace = true
+
+[lints]
+workspace = true

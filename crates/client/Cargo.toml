@@ -1,0 +1,28 @@
+[package]
+name = "qchat-client"
+description = "qchat desktop client (egui)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "qchat"
+path = "src/main.rs"
+
+[features]
+default = ["media", "capture"]
+media = ["qchat-client-core/media"]
+capture = ["qchat-client-core/capture"]
+
+[dependencies]
+qchat-client-core.workspace = true
+eframe = { version = "0.37", default-features = false, features = ["default_fonts", "glow", "persistence", "wayland", "x11"] }
+egui_extras = { version = "0.37", default-features = false }
+serde.workspace = true
+chrono.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true

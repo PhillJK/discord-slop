@@ -1,0 +1,55 @@
+[workspace]
+resolver = "3"
+members = ["crates/proto", "crates/server", "crates/client-core", "crates/cli", "crates/client", "crates/media"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.85"
+
+[workspace.dependencies]
+qchat-proto = { path = "crates/proto" }
+qchat-media = { path = "crates/media", default-features = false }
+qchat-client-core = { path = "crates/client-core", default-features = false }
+qchat-server = { path = "crates/server" }
+
+anyhow = "1"
+thiserror = "2"
+bytes = "1"
+serde = { version = "1", features = ["derive"] }
+postcard = { version = "1", features = ["use-std"] }
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+quinn = { version = "0.11", default-features = false, features = ["runtime-tokio", "rustls-ring", "log"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "logging", "tls12"] }
+rustls-pki-types = "1"
+webpki-roots = "1"
+rcgen = "0.14"
+sha2 = "0.10"
+hex = "0.4"
+clap = { version = "4", features = ["derive", "env"] }
+toml = "0.9"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde", "std"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "tls-rustls-ring-webpki", "postgres", "uuid", "chrono", "migrate", "macros"] }
+argon2 = "0.5"
+parking_lot = "0.12"
+directories = "6"
+crossbeam-channel = "0.5"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+unused_must_use = "deny"
+
+[workspace.lints.clippy]
+unwrap_used = "warn"
+dbg_macro = "warn"
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.release]
+lto = "thin"

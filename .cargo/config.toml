@@ -1,0 +1,16 @@
+# Cross-compiling the Windows client from Linux (MinGW):
+#   sudo dnf install mingw64-gcc mingw64-gcc-c++ mingw64-winpthreads-static
+#   rustup target add x86_64-pc-windows-gnu
+#   cargo build --release --target x86_64-pc-windows-gnu -p qchat-client
+#
+# Link the C++ runtime (used by openh264) and winpthreads statically so the
+# .exe runs on a stock Windows 11 without MinGW DLLs next to it.
+[env]
+CXXSTDLIB_x86_64_pc_windows_gnu = "static=stdc++"
+
+[target.x86_64-pc-windows-gnu]
+rustflags = [
+    # Fedora mingw64 sysroot (libstdc++.a, libwinpthread.a).
+    "-L", "native=/usr/x86_64-w64-mingw32/sys-root/mingw/lib",
+    "-C", "link-args=-static-libgcc -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic",
+]

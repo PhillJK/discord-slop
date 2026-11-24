@@ -1,0 +1,66 @@
+# Builds the qchat desktop client for macOS as a universal (arm64 + x86_64) binary.
+#
+# Runs on an Apple Silicon runner. The x86_64 slice is cross-compiled there;
+# openh264's x86 SIMD assembly needs nasm (the arm64 slice uses the Xcode assembler).
+# The result is uploaded as a workflow artifact (tar.gz, keeps the executable bit).
+
+name: macOS client
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Universal binary
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install build tools
+        # cmake is preinstalled on GitHub's macOS images; nasm is not.
+        run: brew install nasm
+
+      - name: Build (arm64)
+        run: cargo build --locked --release -p qchat-client --target aarch64-apple-darwin
+
+      - name: Build (x86_64)
+        run: cargo build --locked --release -p qchat-client --target x86_64-apple-darwin
+
+      - name: Create universal binary
+        run: |
+          mkdir -p dist
+          lipo -create -output dist/qchat \
+            target/aarch64-apple-darwin/release/qchat \
+            target/x86_64-apple-darwin/release/qchat
+          lipo -info dist/qchat
+          tar -C dist -czf qchat-macos-universal.tar.gz qchat
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qchat-macos-universal
+          path: qchat-macos-universal.tar.gz
+          if-no-files-found: error

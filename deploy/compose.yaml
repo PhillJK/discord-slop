@@ -1,0 +1,16 @@
+# Dev database for the qchat relay server.
+#   podman compose -f deploy/compose.yaml up -d
+#   export DATABASE_URL=postgres://qchat:qchat@localhost:5432/qchat
+services:
+  postgres:
+    image: docker.io/library/postgres:17
+    environment:
+      POSTGRES_USER: qchat
+      POSTGRES_PASSWORD: qchat
+      POSTGRES_DB: qchat
+    ports:
+      - "5432:5432"
+    volumes:
+      - qchat-pg:/var/lib/postgresql/data
+volumes:
+  qchat-pg:

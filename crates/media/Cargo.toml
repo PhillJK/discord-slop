@@ -1,0 +1,57 @@
+[package]
+name = "qchat-media"
+description = "qchat media: voice (cpal/Opus/RNNoise), screen capture (xcap) and H.264 (openh264)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+default = ["full"]
+full = ["audio-io", "opus", "h264", "capture"]
+# Audio device I/O via cpal (Linux: alsa-lib-devel).
+audio-io = ["dep:cpal"]
+# Opus codec (links libopus; builds it with cmake if not installed).
+opus = ["dep:opus"]
+# H.264 via openh264, compiled from source (needs a C++ compiler).
+h264 = ["dep:openh264", "dep:openh264-sys2"]
+# Screen capture: own portal+PipeWire backend on Wayland, xcap elsewhere
+# (Linux: pipewire-devel, libxcb-devel, clang-devel, libglvnd-devel).
+capture = ["dep:xcap", "dep:ashpd", "dep:pipewire", "dep:pollster"]
+
+[dependencies]
+qchat-proto.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+bytes.workspace = true
+parking_lot.workspace = true
+crossbeam-channel.workspace = true
+nnnoiseless = { version = "0.5", default-features = false }
+fast_image_resize = "6"
+cpal = { version = "0.18", optional = true }
+opus = { version = "0.4", optional = true }
+openh264 = { version = "0.9", optional = true }
+openh264-sys2 = { version = "0.9", optional = true, features = ["source"] }
+xcap = { version = "0.9", optional = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+ashpd = { version = "0.14", default-features = false, features = ["async-io", "screencast", "pipewire"], optional = true }
+pipewire = { version = "0.10", optional = true }
+pollster = { version = "1", optional = true }
+
+[dev-dependencies]
+tracing-subscriber.workspace = true
+
+[[example]]
+name = "encode_bench"
+required-features = ["h264"]
+
+[lints]
+workspace = true
+
+[[example]]
+name = "capture_probe"
+required-features = ["capture", "h264"]
+
+[[example]]
+name = "stage_bench"
+required-features = ["h264"]

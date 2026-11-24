@@ -1,0 +1,21 @@
+[package]
+name = "qchat-cli"
+description = "Headless qchat client for scripting and testing"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "qchat-cli"
+path = "src/main.rs"
+
+[dependencies]
+qchat-client-core.workspace = true
+anyhow.workspace = true
+tokio.workspace = true
+clap.workspace = true
+chrono.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true
